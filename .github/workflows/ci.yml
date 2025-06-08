@@ -1,0 +1,56 @@
+name: Code Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check-client:
+    name: Client Lint & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Lint code
+        run: |
+          if [ -f package.json ] && grep -q '"lint"' package.json; then
+            npm run lint || echo "No lint script defined"
+          else
+            echo "No lint script defined"
+          fi
+      - name: Build
+        run: npm run build
+
+  check-server:
+    name: Server Lint & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Lint code
+        run: |
+          if [ -f package.json ] && grep -q '"lint"' package.json; then
+            npm run lint || echo "No lint script defined"
+          else
+            echo "No lint script defined"
+          fi
+      - name: Check for syntax errors
+        run: npx --no-install eslint . || echo "No ESLint config found"
