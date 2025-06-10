@@ -95,3 +95,39 @@ export const getCourseStudentsByLevel = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// @desc    Get all courses (admin only)
+
+// @access  Private/Admin
+
+export const getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find().sort({ department: 1, level: 1, code: 1 });
+    res.json(courses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load courses' });
+  }
+};
+
+// Only admin can access this route
+export const createPredefinedCourse = async (req, res) => {
+  const { name, code, department, level, semester } = req.body;
+
+  if (!/^[A-Z]{3}\d{3}$/.test(code)) {
+    return res.status(400).json({ error: 'Invalid course code format' });
+  }
+
+  try {
+    const course = await Course.create({
+      name,
+      code,
+      department,
+      level,
+      semester
+    });
+
+    res.status(201).json(course);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -30,18 +30,25 @@ export default function CourseList() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {courses.map(course => (
-        <CourseCard key={course._id} course={course} onDelete={() => handleDelete(course._id)} />
-      ))}
-      <button
-        onClick={() => setShowModal(true)}
-        className="border border-dashed border-gray-400 flex items-center justify-center h-32 hover:bg-gray-200 rounded-lg"
-      >
-        + Add New Course
-      </button>
+    <div className="grid grid-cols-1 w-full ">
+        <section  className = "flex justify-end">
+            <button onClick={() => setShowModal(true)} className="border border-dashed border-gray-400 flex items-center justify-center h-12 hover:bg-gray-200 rounded-lg">
+                + Add New Course
+            </button>
+        </section>
 
-      {showModal && <AddCourseModal onClose={() => setShowModal(false)} />}
+        <section className="bg-white p-6 rounded shadow mt-4">
+              <h2 className="text-2xl font-bold mb-6">My Courses</h2>
+              {courses.map(course => (
+                <CourseCard key={course._id} course={course} onDelete={() => handleDelete(course._id)} />
+              ))}
+              {courses.length === 0 && (
+                <p className="text-gray-500">No courses found. Click the button above to add a new course.</p>
+              )}
+        </section>
+
+
+        {showModal && <AddCourseModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }
