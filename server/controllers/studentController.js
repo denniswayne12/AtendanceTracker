@@ -71,23 +71,39 @@ export const getMyCourses = async (req, res) => {
 
 export const enrollInCourses = async (req, res) => {
   const { courseIds } = req.body;
-  const studentId = req.user.id;
+  const userId = req.user.id;
+
+  if (!courseIds || !Array.isArray(courseIds)) {
+    return res.status(400).json({ error: 'Invalid course IDs' });
+  }
 
   try {
-    // Enroll in each course
-    await Course.updateMany(
-      { _id: { $in: courseIds } },
-      { $addToSet: { students: studentId } } // Prevent duplicate entries
+    // Get student info by user id
+    const student = await Student.findOne({ user: userId });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    // Filter out already enrolled courses
+    const newCourseIds = courseIds.filter(id => !student.courses.includes(id));
+
+    if (newCourseIds.length === 0) {
+      return res.json({ success: true, message: 'No new courses to enroll in' });
+    }
+
+    // Add courses to student
+    await Student.findOneAndUpdate(
+      { user: userId },
+      { $push: { courses: { $each: newCourseIds } } }
     );
 
-    // In enrollWithInviteCode controller
-    const student = await Student.findById(studentId);
-    if (student.courses.includes(course._id)) {
-      return res.status(400).json({ error: 'Already enrolled in this course' });
-    }
+    // Add student to each course
+    await Course.updateMany(
+      { _id: { $in: newCourseIds } },
+      { $push: { students: student._id } }
+    );
 
     res.json({ success: true });
   } catch (err) {
+    console.error('❌ Enroll Error:', err.message);
     res.status(500).json({ error: err.message });
-  }   
+  }
 };

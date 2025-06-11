@@ -1,7 +1,7 @@
 import Course from '../models/Course.js';
 import Student from '../models/Student.js';
 
-
+/* enrollInCourses */
 // ____________Create course (lecturer) ____________
 export const createCourse = async (req, res) => {
   const { name, code } = req.body;

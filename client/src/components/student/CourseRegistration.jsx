@@ -37,16 +37,19 @@ export default function CourseRegistration() {
     setSelectedCourses([...selectedCourses, course]);
   };
 
-  const handleSubmit = async () => {
-    try {
-      await axios.post('/students/enroll', {
-        courseIds: selectedCourses.map(c => c._id)
-      });
-      alert('Successfully enrolled in selected courses!');
-    } catch (err) {
-      alert('Enrollment failed');
-    }
-  };
+ const handleSubmit = async () => {
+  try {
+    const res = await axios.post('/students/enroll', {
+      courseIds: selectedCourses.map(c => c._id)
+    });
+
+    console.log('Enrollment Response:', res.data);
+    alert('Successfully enrolled in selected courses!');
+  } catch (err) {
+    console.error('Enrollment Error:', err.response?.data || err.message);
+    alert(`Enrollment failed: ${err.response?.data?.error || 'Unknown error'}`);
+  }
+};
 
   return (
     <div className="bg-white p-6 rounded shadow">
