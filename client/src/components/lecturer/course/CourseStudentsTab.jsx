@@ -11,7 +11,8 @@ export default function CourseStudentsTab({ courseId }) {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await axios.get(`/courses/${courseId}`);
+        /* const res = await axios.get(`/courses/${courseId}`); */
+        const res = await axios.get(`/courses/${courseId}?populate=students`);
         const studentList = res.data.students || [];
         setStudents(studentList);
         setFilteredStudents(studentList);

@@ -1,59 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '../../services/apiClient.js';
-import { toast } from 'react-toastify';
-
 
 export default function AddCourseModal({ onClose }) {
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [department, setDepartment] = useState('');
-  const [level, setLevel] = useState('');
-  const [semester, setSemester] = useState('');
+  const [availableCourses, setAvailableCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('/courses', { name, code, department, level, semester });
-      toast.success('sucessfully added a Course');
-      window.location.reload(); 
-    } catch (err) {
-      toast.error('Failed to add course');
-    }
+  useEffect(() => {
+    const fetchAllCourses = async () => {
+      try {
+        const res = await axios.get('/courses/predefined');
+        setAvailableCourses(res.data);
+      } catch (err) {
+        alert('Failed to load courses');
+      }
+    };
+    fetchAllCourses();
+  }, []);
+
+  const handleSelect = (e) => {
+    setSelectedCourse(e.target.value);
   };
+
+ const handleSubmit = async () => {
+  try {
+    const res = await axios.post('/courses/assign', { courseId: selectedCourse });
+    console.log('Assigned course:', res.data);
+    window.location.reload();
+  } catch (err) {
+    console.error('🚫 Assignment Error:', err.response?.data || err.message);
+    alert(err.response?.data?.error || 'Failed to assign course');
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Add New Course</h2>
+      <div className="bg-white p-6 rounded w-full max-w-md shadow-lg">
+        <h2 className="text-xl font-bold mb-4">Assign Course</h2>
 
-            <form onSubmit={handleSubmit}>
-                <input placeholder="Course Name" value={name} onChange={(e) => setName(e.target.value)} required className="border w-full p-2 mb-2 rounded"/>
-                <input placeholder="Course Code (e.g., MTH201)" value={code} onChange={(e) => setCode(e.target.value)} required className="border w-full p-2 mb-2 rounded"/>
-                <select value={department} onChange={e => setDepartment(e.target.value)} required className="border w-full p-2 mb-2 rounded">
-                  <option value="">Select Department</option>
-                  <option value="Computer Engineering">Computer Engineering</option>
-                  <option value="Mechanical Engineering">Mechanical Engineering</option>
-                  <option value="Civil Engineering">Civil Engineering</option>
-                  <option value="Electrical Engineering">Electrical Engineering</option>
-                </select>
-                <select value={level} onChange={e => setLevel(e.target.value)} required className="border w-full p-2 mb-2 rounded">
-                  <option value="">Select Level</option>
-                  <option value="Level 200">Level 200</option>
-                  <option value="Level 300">Level 300</option>
-                  <option value="Level 400">Level 400</option>
-                </select>
-                <select value={semester} onChange={e => setSemester(e.target.value)} required className="border w-full p-2 mb-4 rounded">
-                  <option value="">Select Semester</option>
-                  <option value="First Semester">First Semester</option>
-                  <option value="Second Semester">Second Semester</option>
-                </select>
+        <select onChange={handleSelect} className="border w-full p-2 rounded mb-4">
+          <option value="">-- Select Course --</option>
+          {availableCourses.map(course => (
+            <option key={course._id} value={course._id}>
+              {course.name} ({course.code}) - {course.department}, {course.level}
+            </option>
+          ))}
+        </select>
 
-                <div className="flex justify-end space-x-2">
-                    <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Add</button>
-                </div>
-            </form>
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+            Cancel
+          </button>
+          <button onClick={handleSubmit} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Assign Course
+          </button>
         </div>
+      </div>
     </div>
   );
 }

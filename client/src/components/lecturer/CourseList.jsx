@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from '../../services/apiClient.js';
 import CourseCard from './CourseCard.jsx';
 import AddCourseModal from './AddCourseModal.jsx';
+import { toast } from 'react-toastify';
 
 export default function CourseList() {
   const [courses, setCourses] = useState([]);
@@ -13,7 +14,7 @@ export default function CourseList() {
         const res = await axios.get('/courses');
         setCourses(res.data);
       } catch (err) {
-        console.error('Failed to load courses');
+        toast.error('Failed to load courses');
       }
     };
     fetchCourses();
@@ -39,7 +40,7 @@ export default function CourseList() {
 
         <section className="bg-white p-6 rounded shadow mt-4">
               <h2 className="text-2xl font-bold mb-6">My Courses23</h2>
-              <section className = "flex bg-red-600" >
+              <section className = "flex" >
                   {courses.map(course => (
                     <CourseCard key={course._id} course={course} onDelete={() => handleDelete(course._id)} />
                   ))}

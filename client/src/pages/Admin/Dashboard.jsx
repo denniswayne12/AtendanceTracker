@@ -4,9 +4,11 @@ import CourseList from '../../components/admin/CourseList.jsx';
 import UserList from '../../components/admin/UserList.jsx';
 import AnalyticsPage from '../../components/admin/AnalyticsPage.jsx';
 import SettingsPage from '../../components/admin/SettingsPage.jsx';
-
+import { IoMenu } from "react-icons/io5";
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('courses');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -25,16 +27,31 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar onNavigate={setActiveTab} />
-      <main className="flex-1 p-6 bg-gray-100">
-        <header className="mb-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <span className="text-sm text-gray-500">Logged in as: Admin</span>
-        </header>
+      <div className="hidden md:block fixed top-0 left-0 w-64 h-[100dvh] bg-white shadow z-2">
+          <Sidebar onNavigate={setActiveTab} />
+        </div>
 
-        {/* Dynamic Content */}
-        {renderContent()}
-      </main>
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden" onClick={() => setSidebarOpen(false)}>
+            <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-50" onClick={(e) => e.stopPropagation()} >
+              <Sidebar onNavigate={(tab) => { setActiveTab(tab); setSidebarOpen(false); }} />
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 p-6 md:ml-64">
+            <header className="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white shadow z-30 flex items-center justify-between px-4">
+              <div className="flex items-center gap-3">
+                <button className="md:hidden text-gray-700" onClick={() => setSidebarOpen(true)} ><IoMenu className="w-6 h-6" /> </button>
+                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              </div>
+              <span className="text-sm text-gray-500">Logged in as: Admin</span>
+            </header>
+
+            <main className="pt-20 p-6 bg-gray-100 min-h-screen mt-20">
+              {renderContent()}
+            </main>
+        </div>
     </div>
   );
 }

@@ -16,7 +16,6 @@ export default function Sidebar({ onNavigate, sidebarOpen, setSidebarOpen }) {
       <button
         className={`md:hidden fixed top-4 left-4 z-40 bg-white rounded-full p-2 shadow transition ${open ? 'hidden' : ''}`}
         onClick={() => setOpen(true)}  aria-label="Open sidebar" >
-        
         <RxHamburgerMenu />
       </button>
 
