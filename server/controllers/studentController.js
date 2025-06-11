@@ -103,7 +103,7 @@ export const enrollInCourses = async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error('❌ Enroll Error:', err.message);
+    console.error('Enroll Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 };

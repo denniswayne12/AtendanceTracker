@@ -52,27 +52,30 @@ export default function AttendanceSummary() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div className="bg-white shadow rounded-lg p-6 text-center">
+      <section className="bg-white shadow rounded-lg p-6 text-center">
         <h3 className="text-sm uppercase text-gray-500">Total Days</h3>
         <p className="text-2xl font-bold">{stats.total}</p>
-      </div>
-      <div className="bg-white shadow rounded-lg p-6 text-center">
+      </section>
+      
+      <section className="bg-white shadow rounded-lg p-6 text-center">
         <h3 className="text-sm uppercase text-gray-500">Present</h3>
         <p className="text-2xl font-bold text-green-500">{stats.present}</p>
-      </div>
-      <div className="bg-white shadow rounded-lg p-6 text-center">
+      </section>
+
+      <section className="bg-white shadow rounded-lg p-6 text-center">
         <h3 className="text-sm uppercase text-gray-500">Absent</h3>
         <p className="text-2xl font-bold text-red-500">{stats.absent}</p>
         <p className="mt-2 font-semibold">{stats.percentage}% Attendance</p>
-      </div>
-      <div className="bg-white p-6 rounded shadow mb-6 col-span-1 md:col-span-3">
+      </section>
+
+      <section className="bg-white p-6 rounded shadow mb-6 col-span-1 md:col-span-3">
         <h2 className="text-xl font-bold mb-4">Graduation Status</h2>
         {eligible ? (
           <p className="text-green-600">✅ You are eligible to graduate!</p>
         ) : (
           <p className="text-red-600">❌ You must pass all required courses to graduate.</p>
         )}
-      </div>
+      </section>
     </div>
   );
 }

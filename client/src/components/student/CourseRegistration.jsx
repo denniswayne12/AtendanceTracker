@@ -32,9 +32,13 @@ export default function CourseRegistration() {
     fetchCourses();
   }, [department, level]);
 
-  const handleSelect = (course) => {
-    if (selectedCourses.some(c => c._id === course._id)) return;
-    setSelectedCourses([...selectedCourses, course]);
+  // Replace handleSelect with a toggle handler for checkboxes
+  const handleToggle = (course) => {
+    if (selectedCourses.some(c => c._id === course._id)) {
+      setSelectedCourses(selectedCourses.filter(c => c._id !== course._id));
+    } else {
+      setSelectedCourses([...selectedCourses, course]);
+    }
   };
 
  const handleSubmit = async () => {
@@ -52,79 +56,77 @@ export default function CourseRegistration() {
 };
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">Register Courses</h2>
+    <section className="bg-white p-6 rounded shadow ">
+          <h2 className="text-xl font-semibold mb-4">Register Courses</h2>
 
-      {/* Department & Level Select */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <select
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">Select Department</option>
-          {departmentOptions.map(dept => (
-            <option key={dept} value={dept}>{dept}</option>
-          ))}
-        </select>
+          {/* Department & Level Select */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="border p-2 rounded w-full"
+            >
+              <option value="">Select Department</option>
+              {departmentOptions.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
 
-        <select
-          value={level}
-          onChange={(e) => setLevel(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">Select Level</option>
-          {levelOptions.map(lvl => (
-            <option key={lvl} value={lvl}>{lvl}</option>
-          ))}
-        </select>
-      </div>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="border p-2 rounded w-full"
+            >
+              <option value="">Select Level</option>
+              {levelOptions.map(lvl => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+          </div>
 
-      {/* Course List */}
-      <div className="mb-6">
+          {/* Course List */}
+          <section className="mb-6 flex flex-col items-start">
         <h3 className="font-semibold mb-2">Available Courses</h3>
-        <ul className="space-y-2">
+        <ul className="flex flex-wrap gap-4 w-full">
           {availableCourses.length > 0 ? (
             availableCourses.map(course => (
-              <li key={course._id} className="bg-white border p-4 rounded flex justify-between items-center">
-                <div>
-                  <strong>{course.name}</strong> ({course.code})
+              <li
+                key={course._id}
+                className="bg-white hover:shadow-xl w-full sm:w-[48%] md:w-[32%] lg:w-[30%] border p-4 rounded flex flex-col gap-2"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex-1">
+                      {/* <span className="text-sm text-gray-600">{course.department} - {course.level}</span> */}
+                      <span> <strong>CourseName: </strong>{course.name}</span>
+                      <p><strong>CourseCode: </strong>{course.code}</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={selectedCourses.some(c => c._id === course._id)}
+                      onChange={() => handleToggle(course)}
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                    />
+                  </div>
                 </div>
-                <button
-                  onClick={() => handleSelect(course)}
-                  className="px-3 py-1 bg-blue-500 text-white rounded"
-                >
-                  Select
-                </button>
               </li>
             ))
           ) : (
             <p className="text-gray-500">Select department and level to see courses</p>
           )}
         </ul>
-      </div>
+      </section>
 
-      {/* Selected Courses */}
-      <div>
-        <h3 className="font-semibold mb-2">Selected Courses</h3>
-        <ul className="space-y-2">
-          {selectedCourses.map(course => (
-            <li key={course._id} className="bg-white border p-4 rounded">
-              {course.name} ({course.code})
-            </li>
-          ))}
-        </ul>
-
-        {selectedCourses.length > 0 && (
-          <button
-            onClick={handleSubmit}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Enroll in Selected Courses
-          </button>
-        )}
-      </div>
-    </div>
+          {/* Enroll Button */}
+          {selectedCourses.length > 0 && (
+            <button
+              onClick={handleSubmit}
+              className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Enroll in Selected Courses
+            </button>
+          )}
+    </section>
   );
 }
 

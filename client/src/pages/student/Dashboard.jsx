@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '../../components/student/Sidebar.jsx';
 import MyCourses from '../../components/student/MyCourses.jsx';
@@ -7,22 +6,25 @@ import CourseRegistration from '../../components/student/CourseRegistration.jsx'
 
 export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen">
-      {/* Student Sidebar */}
-      <Sidebar onNavigate={setActiveTab} />
+    
+      <Sidebar onNavigate={setActiveTab} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-6 bg-gray-100">
-        <header className="mb-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Student Dashboard</h1>
-        </header>
 
-        {/* Dynamic Content */}
-        {activeTab === 'overview' && <AttendanceSummary />}
-        {activeTab === 'register-courses' && <CourseRegistration />}
-        {activeTab === 'my-courses' && <MyCourses />}
+      <main className="flex-1 p-6 transition-all duration-200 md:ml-50">
+          <header className="mb-6 flex justify-between items-center fixed top-0 left-0 md:left-64 w-full md:w-[100%] z-20 bg-gray-100 p-6 shadow"
+            style={{ minHeight: '72px' }}>
+            <h1 className="text-2xl font-bold">Student Dashboard</h1>
+          </header>
+
+          <div className="pt-24">
+            {activeTab === 'overview' && <AttendanceSummary />}
+            {activeTab === 'register-courses' && <CourseRegistration />}
+            {activeTab === 'my-courses' && <MyCourses />}
+          </div>
       </main>
     </div>
   );
