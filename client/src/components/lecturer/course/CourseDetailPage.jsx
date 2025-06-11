@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Components
-import AttendancePage from './CourseAttendanceTab.jsx';
+import CourseAttendanceTab from './CourseAttendanceTab.jsx';
 import CourseStudentsTab from './CourseStudentsTab.jsx';
 import CourseReportsTab from './CourseReportsTab.jsx';
 
@@ -41,7 +41,7 @@ export default function CourseDetailPage() {
       </div>
 
       {/* Render Active Tab */}
-      {tab === 'attendance' && <AttendancePage />}
+      {tab === 'attendance' && <CourseAttendanceTab />}
       {tab === 'students' && <CourseStudentsTab courseId={courseId} />}
       {tab === 'reports' && <CourseReportsTab courseId={courseId} />}
     </div>

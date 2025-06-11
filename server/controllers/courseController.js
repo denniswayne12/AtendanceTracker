@@ -27,6 +27,19 @@ export const getLecturerCourses = async (req, res) => {
     res.status(500).json({ error: 'Failed to load your courses' });
   }
 };
+/* 
+export const getCourseById = async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    const course = await Course.findById(courseId).populate('students');
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    res.json(course);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load course' });
+  }
+}; */
 
 // ____________Generate invite code for attendance____________
 export const generateInviteCode = async (req, res) => {
@@ -151,5 +164,47 @@ export const getCourseById = async (req, res) => {
     res.json(course);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// Get all predefined courses (accessible by lecturer and admin)
+export const getPredefinedCourses = async (req, res) => {
+  try {
+    console.log('Lecturer:', req.user.id);
+    
+    const courses = await Course.find({}).sort({
+      department: 1,
+      level: 1,
+      code: 1
+    });
+
+    console.log('Courses fetched:', courses.length);
+    res.json(courses);
+  } catch (err) {
+    console.error('Error fetching predefined courses:', err.message);
+    res.status(500).json({ error: 'Failed to load courses' });
+  }
+};
+
+
+export const assignCourseToLecturer = async (req, res) => {
+  const { courseId } = req.body;
+  const lecturerId = req.user.id;
+
+  try {
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    // Assign lecturer to course
+    course.lecturer = lecturerId;
+    await course.save();
+
+    res.json(course);
+  } catch (err) {
+    console.error('Error assigning lecturer to course:', err.message);
+    res.status(500).json({ error: 'Failed to assign course' });
   }
 };

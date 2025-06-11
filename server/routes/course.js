@@ -5,6 +5,8 @@ import {
   generateInviteCode,
   enrollWithInviteCode,
   createPredefinedCourse,
+  assignCourseToLecturer,
+  getPredefinedCourses,
    getCourseById,
   getCoursesByDeptAndLevel,
   getAllCourses /*, getCourseById*/ } from '../controllers/courseController.js';
@@ -14,8 +16,12 @@ const router = express.Router();
 
 router.route('/')
   .post(protect, authorize('lecturer'), createCourse)
-  .get(protect, authorize('lecturer'), getLecturerCourses);
+  .get(protect, authorize('lecturer'), getLecturerCourses); 
+  router.get('/:courseId', protect, authorize('lecturer'), getCourseById);
 
+router.post('/assign', protect, authorize('lecturer'), assignCourseToLecturer);
+
+router.get('/predefined', protect, authorize('lecturer'), getPredefinedCourses);
 // Admin-only routes
 
 router.post('/predefined', protect, authorize('admin'), createPredefinedCourse);

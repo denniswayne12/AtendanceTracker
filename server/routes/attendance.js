@@ -1,7 +1,7 @@
 import express from 'express';
 import { markAttendance, getAttendanceByCourse } from '../controllers/attendanceController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
-import { markManualAttendance } from '../controllers/attendanceController.js';
+import { markManualAttendance ,getAttendanceByCourse} from '../controllers/attendanceController.js';
 const router = express.Router();
 
 router.route('/')
@@ -9,6 +9,7 @@ router.route('/')
   
 router.post('/manual', protect, authorize('lecturer'), markManualAttendance);
 
-router.get('/:courseId', protect, authorize('lecturer'), getAttendanceByCourse);
+/* router.get('/:courseId', protect, authorize('lecturer'), getAttendanceByCourse); */
+router.get('/course/:courseId', protect, authorize('lecturer'), getAttendanceByCourse);
 router.post('/manual', protect, authorize('lecturer'), markManualAttendance);
 export default router;

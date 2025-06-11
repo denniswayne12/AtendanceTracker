@@ -1,5 +1,6 @@
 import Attendance from '../models/Attendance.js';
-
+import Student from '../models/Student.js';
+import mongoose from 'mongoose';
 
 export const markAttendance = async (req, res) => {
   const { course, records } = req.body;
@@ -11,44 +12,80 @@ export const markAttendance = async (req, res) => {
   }
 };
 
-export const markManualAttendance = async (req, res) => {
-  const { courseId, date, records } = req.body;
-  
-  try {
-    // Check if attendance already exists for this date
-    const existing = await Attendance.findOne(
-      { course: courseId, date },
-       { records },
-      { upsert: true, new: true }
-    );
-    
-    if (existing) {
-      // Update existing attendance
-      existing.records = records;
-      await existing.save();
-      return res.json(existing);
-    }
-    // Add to completedCourses (only if not already added)
-      await Student.findByIdAndUpdate(student, {
-        $addToSet: { 'completedCourses': { course: student.course, status: student.status } },
-        $set: { 'completedCourses.$[course].grade': student.grade } // if you track grades
-      },
-      { arrayFilters: [{ 'course.course': courseId }] });
-    // Create new attendance
-    const attendance = await Attendance.create({ course: courseId, date, records });
-    res.status(201).json(attendance);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-     
-};
 
 export const getAttendanceByCourse = async (req, res) => {
   const { courseId } = req.params;
+  const { date = new Date().toISOString().split('T')[0] } = req.query;
+
   try {
-    const attendances = await Attendance.find({ course: courseId }).populate('records.student');
-    res.json(attendances);
+    // Get all students enrolled in the course
+    const studentsInCourse = await Student.find({ courses: courseId }).select('_id name rollNumber');
+
+    if (!studentsInCourse.length) {
+      return res.json([]);
+    }
+
+    // Find existing attendance record for selected date
+    let attendanceRecord = await Attendance.findOne({ course: courseId, date });
+
+    // If none exists, create with default "Present" status
+    if (!attendanceRecord) {
+      attendanceRecord = await Attendance.create({
+        course: courseId,
+        date,
+        records: studentsInCourse.map(s => ({
+          student: s._id,
+          status: 'Present'
+        }))
+      });
+    }
+
+    // Format response data
+    const result = studentsInCourse.map(student => {
+      const record = attendanceRecord.records.find(r => r.student.toString() === student._id.toString());
+      return {
+        studentId: student._id,
+        name: student.name,
+        rollNumber: student.rollNumber,
+        status: record ? record.status : 'Present'
+      };
+    });
+
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(' Failed to fetch attendance:', err.message);
+    res.status(500).json({ error: 'Failed to load attendance' });
+  }
+};
+
+export const markManualAttendance = async (req, res) => {
+  const { courseId, date, records } = req.body;
+
+  if (!courseId || !date || !records || !Array.isArray(records)) {
+    return res.status(400).json({ error: 'Invalid request data' });
+  }
+
+  try {
+    // Try to find existing attendance record
+    let attendanceDoc = await Attendance.findOne({ course: courseId, date });
+
+    if (attendanceDoc) {
+      // Update existing attendance
+      attendanceDoc.records = records;
+      await attendanceDoc.save();
+      res.json(attendanceDoc);
+    } else {
+      // Create new attendance record
+      attendanceDoc = await Attendance.create({
+        course: courseId,
+        date,
+        records
+      });
+
+      res.status(201).json(attendanceDoc);
+    }
+  } catch (err) {
+    console.error(' Failed to save attendance:', err.message);
+    res.status(500).json({ error: 'Failed to save attendance' });
   }
 };
