@@ -49,7 +49,7 @@ export const login = async (req, res) => {
 
 
 export const registerStudent = async (req, res) => {
-  const { name, email, password } = req.body; // email will be used as roll number
+  const { name, email, password, level, department, option } = req.body; // Accept new fields
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -61,10 +61,13 @@ export const registerStudent = async (req, res) => {
       role: 'student'
     });
 
-    // Optionally create Student document if needed
+    // Create Student document with all required fields
     const student = await Student.create({
       user: user._id,
-      rollNumber: email // treat email as roll number
+      rollNumber: email, // treat email as roll number
+      level,
+      department,
+      option
     });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });

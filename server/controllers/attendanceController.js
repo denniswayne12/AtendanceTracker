@@ -16,7 +16,11 @@ export const markManualAttendance = async (req, res) => {
   
   try {
     // Check if attendance already exists for this date
-    const existing = await Attendance.findOne({ course: courseId, date });
+    const existing = await Attendance.findOne(
+      { course: courseId, date },
+       { records },
+      { upsert: true, new: true }
+    );
     
     if (existing) {
       // Update existing attendance
@@ -24,13 +28,19 @@ export const markManualAttendance = async (req, res) => {
       await existing.save();
       return res.json(existing);
     }
-    
+    // Add to completedCourses (only if not already added)
+      await Student.findByIdAndUpdate(student, {
+        $addToSet: { 'completedCourses': { course: student.course, status: student.status } },
+        $set: { 'completedCourses.$[course].grade': student.grade } // if you track grades
+      },
+      { arrayFilters: [{ 'course.course': courseId }] });
     // Create new attendance
     const attendance = await Attendance.create({ course: courseId, date, records });
     res.status(201).json(attendance);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+     
 };
 
 export const getAttendanceByCourse = async (req, res) => {

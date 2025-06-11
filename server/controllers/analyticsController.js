@@ -39,3 +39,35 @@ export const getStudentAnalytics = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const checkGraduationEligibility = async (req, res) => {
+  const studentId = req.user.id;
+
+  try {
+    const student = await Student.findById(studentId).populate('completedCourses.course', 'code');
+    
+    // Define required courses per level (you can store this in DB or use logic)
+    const requiredCourses = {
+      'Level 200': ['CEC200', 'CEC201', 'CEC202'],
+      'Level 300': ['CEC300', 'CEC301', 'CEC302'],
+      'Level 400': ['CEC400', 'CEC401', 'CEC402']
+    };
+
+    // Get all passed courses
+    const passedCourses = student.completedCourses
+      .filter(c => c.status === 'Passed')
+      .map(c => c.course.code);
+
+    // Check if all required courses are passed
+    const allPassed = Object.values(requiredCourses).every(levelCourses =>
+      levelCourses.every(courseCode =>
+        passedCourses.includes(courseCode)
+      )
+    );
+
+    res.json({ eligibleForGraduation: allPassed });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

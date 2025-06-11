@@ -56,3 +56,38 @@ export const addStudent = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const getMyCourses = async (req, res) => {
+  try {
+    const student = await Student.findOne({ user: req.user.id }).populate('courses');
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+    res.json(student.courses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+export const enrollInCourses = async (req, res) => {
+  const { courseIds } = req.body;
+  const studentId = req.user.id;
+
+  try {
+    // Enroll in each course
+    await Course.updateMany(
+      { _id: { $in: courseIds } },
+      { $addToSet: { students: studentId } } // Prevent duplicate entries
+    );
+
+    // In enrollWithInviteCode controller
+    const student = await Student.findById(studentId);
+    if (student.courses.includes(course._id)) {
+      return res.status(400).json({ error: 'Already enrolled in this course' });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }   
+};

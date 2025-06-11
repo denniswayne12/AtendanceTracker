@@ -38,13 +38,15 @@ export default function CourseList() {
         </section>
 
         <section className="bg-white p-6 rounded shadow mt-4">
-              <h2 className="text-2xl font-bold mb-6">My Courses</h2>
-              {courses.map(course => (
-                <CourseCard key={course._id} course={course} onDelete={() => handleDelete(course._id)} />
-              ))}
-              {courses.length === 0 && (
-                <p className="text-gray-500">No courses found. Click the button above to add a new course.</p>
-              )}
+              <h2 className="text-2xl font-bold mb-6">My Courses23</h2>
+              <section className = "flex bg-red-600" >
+                  {courses.map(course => (
+                    <CourseCard key={course._id} course={course} onDelete={() => handleDelete(course._id)} />
+                  ))}
+                  {courses.length === 0 && (
+                    <p className="text-gray-500">No courses found. Click the button above to add a new course.</p>
+                  )}
+              </section>
         </section>
 
 

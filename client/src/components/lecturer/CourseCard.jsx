@@ -13,11 +13,9 @@ export default function CourseCard({ course, onDelete }) {
       default: return 'Unknown Level';
     }
   };
-  {/* <Link to={`/lecturer/course/${course._id}/attendance`} className="mt-4 inline-block text-blue-500 hover:underline">
-          View Attendance
-        </Link> */}
+
   return (
-    <div className  = "bg-green-400 py-1 px-2 rounded shadow mb-4 w-[300px]">
+    <div className="py-1 px-2 rounded shadow mb-4 w-[300px]">
         {/* <p className="text-sm text-black mt-2">Lecturer: {course.lecturer.name}</p> */}
        <Link to={`/lecturer/course/${course._id}/attendance`} className="shadow rounded-lg  hover:shadow-md transition-shadow">
         <h3 className="font-bold">{course.name}</h3>

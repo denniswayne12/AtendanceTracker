@@ -26,7 +26,16 @@ const studentSchema = new mongoose.Schema({
   },
   option: {
     type: String
-  }
+  },
+ graduated: {
+    type: Boolean,
+    default: false
+  },
+ completedCourses: [{
+    course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+    status: { type: String, enum: ['Passed', 'Failed'], default: 'Failed' },
+    grade: Number
+  }]
 
 }, { timestamps: true });
 

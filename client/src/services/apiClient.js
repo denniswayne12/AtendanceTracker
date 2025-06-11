@@ -12,4 +12,10 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+
+apiClient.create({
+  baseURL: process.env.REACT_APP_API_URL || '/api', // Make sure this matches your backend route
+  withCredentials: true
+});
+
 export default apiClient;

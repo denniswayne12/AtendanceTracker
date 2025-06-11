@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { IoSettingsSharp } from "react-icons/io5";
 
 export default function Sidebar({ onNavigate }) {
   return (
@@ -15,8 +15,9 @@ export default function Sidebar({ onNavigate }) {
         <button onClick={() => onNavigate('analytics')} className="block w-full text-left px-3 py-2 hover:bg-blue-100 rounded-md">
           Analytics & Reports
         </button>
-        <button onClick={() => onNavigate('settings')} className="block w-full text-left px-3 py-2 hover:bg-blue-100 rounded-md">
-          Settings
+        <button onClick={() => onNavigate('settings')} 
+            className="w-full text-left px-3 py-2 hover:bg-blue-100 rounded-md flex items-center gap-1">
+            <IoSettingsSharp />Settings
         </button>
       </nav>
     </aside>

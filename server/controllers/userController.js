@@ -22,3 +22,20 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ error: 'Failed to load users' });
   }
 };
+
+
+// GET /api/courses?department=Computer+Engineering&level=Level+200
+export const getCoursesByDeptAndLevel = async (req, res) => {
+  const { department, level } = req.query;
+
+  try {
+    const courses = await Course.find({
+      department,
+      level
+    }).sort({ code: 1 });
+
+    res.json(courses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load courses' });
+  }
+};
